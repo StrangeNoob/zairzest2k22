@@ -1,4 +1,4 @@
-const { StatusCodes } = require('http-status-code');
+const { StatusCodes } = require('http-status-codes');
 const firebaseAdmin = require('../utils/firebase-admin')
 
 const signIn = async (req,res,next) => {
@@ -13,19 +13,11 @@ const signIn = async (req,res,next) => {
             },
             status: StatusCodes.UNAUTHORIZED
         });
-    } else if (provider == null) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            message: "Provider is missing",
-            data: {},
-            error: {
-                message: "Provider is missing"
-            },
-            status: StatusCodes.BAD_REQUEST
-        });
     } else  {
         try {
             const user = await firebaseAdmin.auth().verifyIdToken(authorization);
-            if(name == null && provider == 'email&password')  {
+            console.log(user);
+            if(name == null && user.firebase.sign_in_provider === 'password')  {
                 return res.status(StatusCodes.BAD_REQUEST).json({
                     message: "Name is missing",
                     data: {},
