@@ -1,7 +1,7 @@
 const Counter = require('./counter');
+const Users = require('./users');
 const Events = require('./events');
 const Teams = require('./teams');
-const Users = require('./users');
 
 module.exports = {
     Counter,

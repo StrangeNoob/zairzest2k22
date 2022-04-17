@@ -16,7 +16,7 @@ const main = async () => {
         app.use(express.urlencoded({ extended: true }));
         app.use(cookieParser());
 
-        app.use(routes);
+        app.use('/auth', routes.auth);
 
         mongoose.connect(config.mongoose,{ useNewUrlParser: true });
         

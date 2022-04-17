@@ -18,7 +18,7 @@ const userSchema = new Schema({
     },
     profilePic: {
         type: String,
-        required: false,
+        required: true,
         default: '/assets/images/default-profile.png'
     },
     event: [{
@@ -27,8 +27,12 @@ const userSchema = new Schema({
     }],
     regNo: {
         type: Number,
+        required:false
     },
-    phone: String,
+    phone: {
+        type: String,
+        required: false
+    },
     branch: {
         type: String,
         enum: [
@@ -48,6 +52,7 @@ const userSchema = new Schema({
             "Physics",
             "Chemistry",
         ],
+        required: false
     },
     isPaid: {
         type: Boolean,

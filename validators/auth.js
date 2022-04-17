@@ -1,4 +1,4 @@
-const { StatusCodes } = require('http-status-codes');
+const { StatusCodes } = require('http-status-code');
 const firebaseAdmin = require('../utils/firebase-admin')
 
 const signIn = async (req,res,next) => {
@@ -42,7 +42,7 @@ const signIn = async (req,res,next) => {
                 message: "Internal server error",
                 data: {},
                 error: {
-                    message: "Internal server error"
+                    message: err.message
                 },
                 status: StatusCodes.INTERNAL_SERVER_ERROR
             });

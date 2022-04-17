@@ -1,7 +1,7 @@
-const { StatusCodes } = require('http-status-codes');
+const { StatusCodes } = require('http-status-code');
 const firebaseAdmin = require('../utils/firebase-admin')
 
-const { Users, Counter } = require('./models/index');
+const { Users, Counter } = require('../models/index');
 
 const signIn = async (req,res) => {
     const { name: userName, provider } = req.body;
@@ -30,6 +30,6 @@ const profile = async (req,res) => {
 
 
 module.exports = {
-    signUp,
+    signIn,
     profile
 }

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const teamSchema = new mongoose.Schema({
-    _id: String,
+const Schema = mongoose.Schema;
+const teamSchema = new Schema({
     name: {
         type: String,
         uppercase: true
@@ -10,11 +10,11 @@ const teamSchema = new mongoose.Schema({
         ref: 'Event'
     },
     leader: {
-        type: mongoose.SchemaType.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User',
     },
     teamMember: [{
-        type: mongoose.SchemaType.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User',
     }],
     teamExtraData:{
