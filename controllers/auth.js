@@ -4,8 +4,7 @@ const { createJWT } = require("../utils/jwt");
 
 const { Users, Counter } = require("../models/index");
 
-const signIn = async (req, res) => {
-  const { name: userName, provider } = req.body;
+const signUp = async (req, res) => {
   const user = req.user;
 
   let newUser = await Users.findOne({ email: user.email });
@@ -33,23 +32,36 @@ const signIn = async (req, res) => {
     }
   );
 
-
   newUser = await Users.create({
     zid: `ZEN${String(counter.seq).padStart(6, "0")}`,
-    name:
-      user.firebase.sign_in_provider === "google.com" ? user.name : userName,
     email: user.email,
     profilePic: user.picture,
   });
+  if (user.firebase.sign_in_provider === "google.com") {
+    newUser = await Users.findOneAndUpdate(
+      {
+        email: user.email,
+      },
+      {
+        $set: {
+          name: user.name,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+  }
 
   let token = createJWT(newUser);
-  
-  res.cookies("userToken", token,{ maxAge: 900000, httpOnly: true });
+
+  res.cookies("userToken", token, { maxAge: 900000, httpOnly: true });
 
   return res.status(StatusCodes.CREATED).json({
     message: "User created successfully",
     data: newUser,
     error: {},
+    token: token,
     status: StatusCodes.CREATED,
   });
 };
@@ -57,7 +69,7 @@ const signIn = async (req, res) => {
 const profile = async (req, res) => {};
 
 const register = async (req, res) => {
-  const { phone, regNo, branch } = req.body;
+  const { name, phone, regNo, branch } = req.body;
   const user = req.user;
 
   let newUser = await Users.findOne({ email: user.email });
@@ -65,9 +77,12 @@ const register = async (req, res) => {
     newUser = await Users.findOneAndUpdate(
       { email: user.email },
       {
-        phone,
-        regNo,
-        branch,
+        $set: {
+          name,
+          phone,
+          regNo,
+          branch,
+        },
       },
       {
         new: true,
@@ -89,8 +104,36 @@ const register = async (req, res) => {
   });
 };
 
+const signIn = async (req, res) => {
+  const user = req.user;
+  let newUser = await Users.findOne({ email: user.email });
+  if (newUser) {
+    let token = createJWT(newUser);
+
+    res.cookies("userToken", token, { maxAge: 900000, httpOnly: true });
+  
+    return res.status(StatusCodes.OK).json({
+      message: "User signed in successfully",
+      data: newUser,
+      error: {},
+      status: StatusCodes.OK,
+      token: token,
+    });
+  }
+  return res.status(StatusCodes.NOT_FOUND).json({
+    message: "User does not exist",
+    data: {},
+    error: {
+      message: "User does not exist",
+    },
+    status: StatusCodes.NOT_FOUND,  
+    token: null
+  });
+}
+
 module.exports = {
-  signIn,
+  signUp,
   profile,
-  register
+  signIn,
+  register,
 };

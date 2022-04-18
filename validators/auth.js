@@ -1,9 +1,10 @@
 const { StatusCodes } = require('http-status-codes');
 const firebaseAdmin = require('../utils/firebase-admin')
+const { User } = require('../models/index');
+const { verifyToken } = require('../utils/jwt');
 
-const signIn = async (req,res,next) => {
+const signUp = async (req,res,next) => {
     const { authorization } = req.headers;
-    const { name } = req.body;
     if(authorization == null ) {
         return res.status(StatusCodes.UNAUTHORIZED).json({
             message: "Authorization header is missing",
@@ -15,17 +16,7 @@ const signIn = async (req,res,next) => {
         });
     } else  {
         try {
-            const user = await firebaseAdmin.auth().verifyIdToken(authorization);
-            if(name == null && user.firebase.sign_in_provider === 'password')  {
-                return res.status(StatusCodes.BAD_REQUEST).json({
-                    message: "Name is missing",
-                    data: {},
-                    error: {
-                        message: "Name is missing"
-                    },
-                    status: StatusCodes.BAD_REQUEST
-                });
-            }    
+            const user = await firebaseAdmin.auth().verifyIdToken(authorization);  
             req.user = user;        
             next();
         } catch (err) {
@@ -44,7 +35,7 @@ const signIn = async (req,res,next) => {
 
 const register = async (req,res,next) => {
     const { authorization } = req.headers;
-    const { phone, regNo, branch } = req.body;
+    const { name, phone, regNo, branch } = req.body;
     if(authorization == null ) {
         return res.status(StatusCodes.UNAUTHORIZED).json({
             message: "Authorization header is missing",
@@ -54,12 +45,12 @@ const register = async (req,res,next) => {
             },
             status: StatusCodes.UNAUTHORIZED
         });
-    } else if(phone == null || regNo == null || branch == null) {
+    } else if(name == null || phone == null || regNo == null || branch == null) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-            message: "Phone, regNo and branch are required",
+            message: "Name, Phone, regNo and branch are required",
             data: {},
             error: {
-                message: "Phone, regNo and branch are required"
+                message: "Name, Phone, regNo and branch are required"
             },
             status: StatusCodes.BAD_REQUEST
         });
@@ -83,9 +74,20 @@ const register = async (req,res,next) => {
         });
     } 
     try {
-        const user = await firebaseAdmin.auth().verifyIdToken(authorization);
-        req.user = user;
-        next();
+        const { status, data, error } = verifyToken(authorization);
+        if(status) {
+            const user = await User.findOne({ _id: data._id });
+            req.user = user;
+            next();
+        } 
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "JWT Verification Failed",
+            data: {},
+            error: {
+                message: error,
+            },
+            status: StatusCodes.UNAUTHORIZED
+        });
     } catch (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: "Internal server error",
@@ -97,6 +99,34 @@ const register = async (req,res,next) => {
     }
 }
 
+const signIn = async (req,res,next) => {
+    if(authorization == null ) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "Authorization header is missing",
+            data: {},
+            error: {
+                message: "Authorization header is missing"
+            },
+            status: StatusCodes.UNAUTHORIZED
+        });
+    } else  {
+        try {
+            const user = await firebaseAdmin.auth().verifyIdToken(authorization);
+            req.user = user;
+            next();
+        } catch (err) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                message: "Internal server error",
+                data: {},
+                error: {
+                    message: err.message
+                },
+                status: StatusCodes.INTERNAL_SERVER_ERROR
+            });
+        }
+    }
+}
+
 const profile = async (req,res) => {
 
 }
@@ -104,7 +134,8 @@ const profile = async (req,res) => {
 
 
 module.exports = {
-    signIn,
+    signUp,
     register,
-    profile
+    profile,
+    signIn,
 }
