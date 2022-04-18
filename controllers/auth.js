@@ -55,7 +55,7 @@ const signUp = async (req, res) => {
 
   let token = createJWT(newUser);
 
-  res.cookies("userToken", token, { maxAge: 900000, httpOnly: true });
+  res.cookie("userToken", token, { maxAge: 900000, httpOnly: true });
 
   return res.status(StatusCodes.CREATED).json({
     message: "User created successfully",
