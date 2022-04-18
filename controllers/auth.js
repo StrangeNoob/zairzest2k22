@@ -110,7 +110,7 @@ const signIn = async (req, res) => {
   if (newUser) {
     let token = createJWT(newUser);
 
-    res.cookies("userToken", token, { maxAge: 900000, httpOnly: true });
+    res.cookie("userToken", token, { maxAge: 900000, httpOnly: true });
   
     return res.status(StatusCodes.OK).json({
       message: "User signed in successfully",

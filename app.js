@@ -7,7 +7,7 @@ const cors = require('cors');
 require('dotenv').config();
 const config = require("./config");
 const routes = require("./routes")
-const {Counter } = require("./models");
+const { Counter } = require("./models");
 const main = async () => {
     try {
 

@@ -100,7 +100,8 @@ const register = async (req,res,next) => {
 }
 
 const signIn = async (req,res,next) => {
-    if(authorization == null ) {
+    const { authorization } = req.headers;
+    if( authorization == null ) {
         return res.status(StatusCodes.UNAUTHORIZED).json({
             message: "Authorization header is missing",
             data: {},
