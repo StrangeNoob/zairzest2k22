@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const firebaseAdmin = require("../utils/firebase-admin");
 const { createJWT } = require("../utils/jwt");
 
-const { Users, Counter } = require("../models/index");
+const { Users, Counter } = require("../models");
 
 const signUp = async (req, res) => {
   const user = req.user;
@@ -72,10 +72,10 @@ const register = async (req, res) => {
   const { name, phone, regNo, branch } = req.body;
   const user = req.user;
 
-  let newUser = await Users.findOne({ email: user.email });
+  let newUser = await Users.findById(user._id);
   if (newUser) {
     newUser = await Users.findOneAndUpdate(
-      { email: user.email },
+      { _id: user._id },
       {
         $set: {
           name,
@@ -88,11 +88,11 @@ const register = async (req, res) => {
         new: true,
       }
     );
-    return res.status(StatusCodes.CREATED).json({
-      message: "User created successfully",
+    return res.status(StatusCodes.OK).json({
+      message: "User updated successfully",
       data: newUser,
       error: {},
-      status: StatusCodes.CREATED,
+      status: StatusCodes.OK,
     });
   }
 

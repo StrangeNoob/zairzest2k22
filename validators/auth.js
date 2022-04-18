@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const firebaseAdmin = require('../utils/firebase-admin')
-const { User } = require('../models/index');
-const { verifyToken } = require('../utils/jwt');
+const { Users } = require('../models/index');
+const { verifyJWT } = require('../utils/jwt');
 
 const signUp = async (req,res,next) => {
     const { authorization } = req.headers;
@@ -18,7 +18,7 @@ const signUp = async (req,res,next) => {
         try {
             const user = await firebaseAdmin.auth().verifyIdToken(authorization);  
             req.user = user;        
-            next();
+            return next();
         } catch (err) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
@@ -46,6 +46,7 @@ const register = async (req,res,next) => {
             status: StatusCodes.UNAUTHORIZED
         });
     } else if(name == null || phone == null || regNo == null || branch == null) {
+        console.log(name, phone, regNo, branch);
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: "Name, Phone, regNo and branch are required",
             data: {},
@@ -54,12 +55,12 @@ const register = async (req,res,next) => {
             },
             status: StatusCodes.BAD_REQUEST
         });
-    } else if ( !phone.match(/^[0-9]{10}$/) || !regNo.match(/^[0-9]{6}$/) ) {
+    } else if ( !String(phone).match(/^[0-9]{10}$/) || !String(regNo).match(/^[0-9]{10}$/) ) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-            message: "Phone and regNo must be 10 digits and regNo must be 6 digits",
+            message: "Phone and regNo must be 10 digits and regNo must be 10 digits",
             data: {},
             error: {
-                message: "Phone and regNo must be 10 digits and regNo must be 6 digits"
+                message: "Phone and regNo must be 10 digits and regNo must be 10 digits"
             },
             status: StatusCodes.BAD_REQUEST
         });
@@ -74,11 +75,11 @@ const register = async (req,res,next) => {
         });
     } 
     try {
-        const { status, data, error } = verifyToken(authorization);
+        const { status, data, error } = verifyJWT(authorization);
         if(status) {
-            const user = await User.findOne({ _id: data._id });
+            const user = await Users.findById({ _id: data.id });
             req.user = user;
-            next();
+            return next();
         } 
         return res.status(StatusCodes.UNAUTHORIZED).json({
             message: "JWT Verification Failed",
@@ -114,7 +115,7 @@ const signIn = async (req,res,next) => {
         try {
             const user = await firebaseAdmin.auth().verifyIdToken(authorization);
             req.user = user;
-            next();
+            return next();
         } catch (err) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
