@@ -11,7 +11,7 @@ const signUp = async (req, res) => {
   if (newUser) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       message: "User already exists",
-      data: {},
+      data: newUser,
       error: {},
       status: StatusCodes.BAD_REQUEST,
     });
