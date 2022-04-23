@@ -9,4 +9,5 @@ module.exports = {
   Events,
   Team,
   Users,
+  EventRegistration,
 };
