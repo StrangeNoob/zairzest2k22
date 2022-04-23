@@ -1,11 +1,12 @@
-const Counter = require('./counter');
-const Users = require('./users');
-const Events = require('./events');
-const Teams = require('./teams');
+const Counter = require("./counter");
+const Users = require("./users");
+const Events = require("./events");
+const Team = require("./teams");
+const EventRegistration = require("./eventRegistration");
 
 module.exports = {
-    Counter,
-    Events,
-    Teams,
-    Users
-}
+  Counter,
+  Events,
+  Team,
+  Users,
+};

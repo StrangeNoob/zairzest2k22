@@ -149,7 +149,43 @@ const signIn = async (req, res, next) => {
   }
 };
 
-const profile = async (req, res) => {};
+const profile = async (req, res) => {
+  try {
+    const { authorization } = req.headers;
+    if (authorization == null) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        message: "Authorization header is missing",
+        data: {},
+        error: {
+          message: "Authorization header is missing",
+        },
+        status: StatusCodes.UNAUTHORIZED,
+      });
+    }
+    const { status, data, error } = verifyJWT(authorization);
+    if (status) {
+      const user = await Users.findById({ _id: data.id });
+      req.user = user;
+      return next();
+    }
+    return res.status(StatusCodes.UNAUTHORIZED).json({
+      message: "JWT Verification Failed",
+      data: {},
+      error: {
+        message: error,
+      },
+      status: StatusCodes.UNAUTHORIZED,
+    });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Internal server error",
+      data: {},
+      error: {
+        message: err.message,
+      },
+    });
+  }
+};
 
 module.exports = {
   signUp,

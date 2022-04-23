@@ -80,7 +80,38 @@ const signUp = async (req, res) => {
   }
 };
 
-const profile = async (req, res) => {};
+const profile = async (req, res) => {
+  try {
+    const user = req.user;
+    let newUser = await Users.findById(user._id);
+    if (newUser) {
+      return res.status(StatusCodes.OK).json({
+        message: "User profile fetched successfully",
+        data: newUser,
+        error: {},
+        status: StatusCodes.OK,
+      });
+    }
+    return res.status(StatusCodes.NOT_FOUND).json({
+      message: "User does not exist",
+      data: {},
+      error: {
+        message: "User does not exist",
+      },
+      status: StatusCodes.NOT_FOUND,
+    });
+  } catch (err) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: "Internal Server Error",
+      data: {},
+      error: {
+        message: err.message,
+      },
+      token: null,
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+    });
+  }
+};
 
 const register = async (req, res) => {
   try {

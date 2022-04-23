@@ -12,7 +12,7 @@ const AdminBroMongoose = require("admin-bro-mongoose");
 
 const config = require("./config");
 const routes = require("./routes");
-const { Counter, Users, Teams, Events } = require("./models");
+const { Counter, Users, Team, Events } = require("./models");
 
 const main = async () => {
   try {
@@ -26,7 +26,7 @@ const main = async () => {
 
     const adminBro = new AdminBro({
       databases: [connection],
-      resources: [Users, Teams, Events],
+      resources: [Users, Team, Events],
       rootPath: "/admin",
       branding: {
         companyName: "Zairza",
@@ -55,6 +55,7 @@ const main = async () => {
     app.use(cors());
 
     app.use("/auth", routes.auth);
+    app.use("/event", routes.event);
 
     app.get("*", function (req, res) {
       res.status(404).json({
@@ -69,7 +70,7 @@ const main = async () => {
       });
     });
   } catch (err) {
-    console.log("Error:", err.message);
+    console.log("Error:", err);
   }
 };
 
