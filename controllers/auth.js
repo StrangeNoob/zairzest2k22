@@ -12,7 +12,7 @@ const signUp = async (req, res) => {
     if (newUser) {
       let token = createJWT(newUser);
       return res.status(StatusCodes.OK).json({
-        message: "User already exists",
+        message: "User already exists.",
         data: newUser,
         error: {},
         status: StatusCodes.OK,
@@ -149,7 +149,7 @@ const signIn = async (req, res) => {
       });
     }
     return res.status(StatusCodes.NOT_FOUND).json({
-      message: "User does not exist",
+      message: "User does not exist. Please sign up.",
       data: {},
       error: {
         message: "User does not exist",
