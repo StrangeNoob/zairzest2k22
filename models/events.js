@@ -34,9 +34,9 @@ const eventSchema = new Schema({
     category: {
         type: String,
         enum: [
-            "Fun",
-            "Tech",
-            "Workshop"
+            "fun",
+            "tech",
+            "workshop"
         ],
     },
     organisers: [
