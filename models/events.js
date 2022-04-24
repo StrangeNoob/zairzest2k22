@@ -51,7 +51,8 @@ const eventSchema = new Schema({
       phone: String,
     },
   ],
-  
+  extra_data: [String],
+  team_extra_data: [String]
 });
 
 module.exports = mongoose.model("Event", eventSchema);
